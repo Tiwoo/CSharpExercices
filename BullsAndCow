@@ -1,1 +1,147 @@
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BullsAndCows
+{
+    class Program
+    {
+
+
+        static void Main(string[] args)
+        {
+            bool repeat = true;
+
+            while (repeat == true)
+            {
+                //generating radom 4 unique digits code number
+                Random random = new Random();
+                int myDigit = 0;
+                List<int> secretNumber = new List<int>(4);
+               
+                do
+                {
+                    myDigit = random.Next(0, 9);
+                    if (!secretNumber.Contains(myDigit))
+                    {
+                        secretNumber.Add(myDigit);
+                    }
+                    
+                } while (secretNumber.Count < 4);
+
+           
+
+                String secretNumberInt2 = String.Join("",secretNumber);
+                int tryCount = 0;
+                int numberOfTry = 10;
+                int bullsCount;
+                int cowsCount;
+                String answerNumber;
+                int answerNumberInt;
+
+                int answerNumberLength;
+     
+                do
+                {
+
+                    bullsCount = 0;
+                    cowsCount = 0;
+
+                    while (true)
+                    {
+
+                        Console.WriteLine("Enter your answer (your answer should be a 4-digits number!)");
+                       
+
+
+                        do
+                        {
+                            answerNumber = Console.ReadLine();
+                           
+
+                            Console.WriteLine("\nYour answer is: " + answerNumber);
+                            answerNumberLength = answerNumber.Length;
+                            if (answerNumberLength != 4) { Console.WriteLine("Invalid answer: your answer should be a 4-digits number.\nPlease try again!"); }
+                        } while (answerNumberLength != 4);
+
+
+                        try
+                        {
+                            answerNumberInt = Convert.ToInt32(answerNumber);
+                            break;
+                        }
+
+
+                        catch (FormatException)
+                        {
+                            Console.WriteLine("Invalid format!");
+                        }
+
+                    }
+
+                
+
+                    char[] separateDigits = answerNumber.ToCharArray();
+                    int currentDigit;
+
+                    for (int i = 0; i < 4; i++)
+                    {
+
+                        currentDigit = int.Parse(separateDigits[i].ToString());
+
+
+                        if (secretNumber[i] == currentDigit)
+                        {
+                            ++bullsCount;
+
+                        }
+                        else if (secretNumber.Contains(currentDigit))
+                        {
+                            ++cowsCount;
+                        }
+                    }
+                    ++tryCount;
+
+                    
+
+                    if ((bullsCount != 4) && (tryCount < 10)) { Console.WriteLine("Answer: " + bullsCount + " bull(s) and " + cowsCount + " cow(s).\nPlease try again! You have " + (numberOfTry - tryCount) + " shot(s) left!\n"); }
+                } while ((bullsCount != 4) && (tryCount < 10));
+
+                if ((bullsCount == 4) && (tryCount < 10))
+                {
+                    Console.WriteLine("Bravo you found the secret code after " + tryCount + " attempts. You have won!");
+                }
+                else
+                {
+                    Console.WriteLine("After " + numberOfTry + " attempts you didn't find the secret code! You have lost!\nThe secret code was: " + secretNumberInt2);
+                }
+
+                String response;
+                do
+                {
+                    Console.WriteLine("Do you want to play again? Y/N");
+                    response = Console.ReadLine();
+                    if (response == "N" || response == "n")
+                    {
+                        Console.WriteLine("Good Bye!");
+                        repeat = false;
+
+                    } if (response == "Y" || response == "y")
+                    {
+                        Console.WriteLine("\nHere we go again!");
+                        repeat = true;
+                    }
+                    else if ((response != "Y") && (response != "y") && (response != "N") && (response != "n"))
+                    {
+                        Console.WriteLine("I didn't understand your answer");
+                    }
+                } while ((response != "Y") && (response != "y") && (response != "N") && (response != "n"));
+
+            }
+        }
+    }
+}
