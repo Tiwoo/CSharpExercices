@@ -1,0 +1,32 @@
+class Program
+    {
+        static void Main(string[] args)
+        {
+            try
+            {
+                string fromEmail = "yourAdress@gmail.com";
+                string toEmail = "bagbila@hotmail.com";
+                string password = "your password";
+
+                MailMessage mess = new MailMessage();
+                SmtpClient client = new SmtpClient();
+                mess.Subject = "come on";
+                mess.Body = "drop the heat";
+                mess.From = new MailAddress(fromEmail);
+                mess.To.Add(new MailAddress(toEmail));
+                SmtpClient smtp = new SmtpClient();
+                smtp.Host = "smtp.gmail.com";
+                smtp.Port = 587;
+                smtp.UseDefaultCredentials = false;
+                smtp.EnableSsl = true;
+                NetworkCredential nc = new NetworkCredential(fromEmail, password);
+                smtp.Credentials = nc;
+                smtp.Send(mess);
+            }
+            catch (Exception ex2)
+            {
+                Console.WriteLine(string.Format("Error while sending mail: {0}.", ex2.Message));
+            }
+
+        }
+    }
