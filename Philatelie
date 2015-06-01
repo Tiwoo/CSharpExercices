@@ -1,0 +1,209 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Philatelie
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+              // ordre des parametres: nom, annee d'emission, pays, valeur faciale,
+        // nombre d'exemplaires
+        Rare t1 = new Rare("Guarana-4574", 1960, "Mexique", 0.2, 98);
+
+        // ordre des parametres: nom, annee d'emission, pays, valeur faciale
+        Commemoratif t2 = new Commemoratif("700eme-501", 2002, "Suisse", 1.5);
+        Timbre t3 = new Timbre("Setchuan-302", 2004, "Chine", 0.2);
+
+        Rare t4 = new Rare("Yoddle-201", 1916, "Suisse", 0.8, 3);
+        Rare t5 = new Rare(3);
+
+
+        List<Timbre> collection = new List<Timbre>();
+
+        collection.Add(t1);
+        collection.Add(t2);
+        collection.Add(t3);
+        collection.Add(t4);
+        collection.Add(t5);
+
+        for (int i = 0; i < collection.Count; ++i)
+        {
+            Console.WriteLine(collection[i]);
+            Console.WriteLine("Prix vente : " + collection[i].vente() + " francs");
+            Console.WriteLine();
+        }
+
+        Console.ReadLine();
+    }
+        class Timbre
+        {
+
+            public static int ANNEE_COURANTE = 2014;
+            public static int VALEUR_TIMBRE_DEFAUT = 1;
+            public static String PAYS_DEFAUT = "Suisse";
+            public static String CODE_DEFAUT = "lambda";
+            public static int BASE_1_EXEMPLAIRES = 100;
+            public static int BASE_2_EXEMPLAIRES = 1000;
+            public static double PRIX_BASE_1 = 600;
+            public static double PRIX_BASE_2 = 400;
+            public static double PRIX_BASE_3 = 50;
+
+            private string code;
+            private int anneeEmission;
+            private string paysOrigine;
+            private double valeurFaciale;
+
+            public Timbre()
+            {
+                code = CODE_DEFAUT;
+                anneeEmission = ANNEE_COURANTE;
+                paysOrigine = PAYS_DEFAUT;
+                valeurFaciale = VALEUR_TIMBRE_DEFAUT;
+            }
+
+            public Timbre(string unCode)
+            {
+                code = unCode;
+                anneeEmission = ANNEE_COURANTE;
+                paysOrigine = PAYS_DEFAUT;
+                valeurFaciale = VALEUR_TIMBRE_DEFAUT;
+            }
+
+            public Timbre(string unCode, int uneAnneeEmission)
+            {
+                code = unCode;
+                anneeEmission = uneAnneeEmission;
+                paysOrigine = PAYS_DEFAUT;
+                valeurFaciale = VALEUR_TIMBRE_DEFAUT;
+            }
+
+            public Timbre(string unCode, int uneAnneeEmission, string unPaysOrigine)
+            {
+                code = unCode;
+                anneeEmission = uneAnneeEmission;
+                paysOrigine = unPaysOrigine;
+                valeurFaciale = VALEUR_TIMBRE_DEFAUT;
+            }
+
+            public Timbre(string unCode, int uneAnneeEmission, string unPaysOrigine, double uneValeurFaciale)
+            {
+                code = unCode;
+                anneeEmission = uneAnneeEmission;
+                paysOrigine = unPaysOrigine;
+                valeurFaciale = uneValeurFaciale;
+            }
+
+            public virtual double vente()
+            {
+                if ((ANNEE_COURANTE - anneeEmission) < 5)
+                {
+                    return valeurFaciale;
+                }
+                else
+                {
+                    return (valeurFaciale * (ANNEE_COURANTE - anneeEmission) * 2.5);
+                }
+            }
+
+            public override string ToString()
+            {
+                return "Timbre de code " + code + " datant de " + anneeEmission + " (provenance " + paysOrigine + " ) ayant pour valeur faciale " + valeurFaciale + " francs";
+            }
+
+            public int age()
+            {
+                return (ANNEE_COURANTE - anneeEmission);
+            }
+
+            public String getCode()
+            {
+                return code;
+            }
+
+            public int getAnnee()
+            {
+                return anneeEmission;
+            }
+
+            public String getPays()
+            {
+                return paysOrigine;
+            }
+
+            public double getValeurFaciale()
+            {
+                return valeurFaciale;
+            }
+        }
+
+        class Rare : Timbre
+        {
+            private int nbExemplaires;
+
+            public Rare(string unCode, int uneAnneeEmission, string unPaysOrigine, double uneValeurFaciale, int unNbExemplaires)
+                : base(unCode, uneAnneeEmission, unPaysOrigine, uneValeurFaciale)
+            {
+                nbExemplaires = unNbExemplaires;
+            }
+
+            public Rare(int unNbExempalire)
+            {
+                nbExemplaires = unNbExempalire;
+            }
+
+            public int getExemplaire()
+            {
+                return nbExemplaires;
+            }
+
+            public override string ToString()
+            {
+                return base.ToString() + "\nNombre d'exemplaires -> " + nbExemplaires;
+            }
+
+            public override double vente()
+            {
+                double prixBase;
+                if (nbExemplaires < 100)
+                {
+                    prixBase = PRIX_BASE_1;
+                }
+                else if ((nbExemplaires >= 100) && (nbExemplaires < 1000))
+                {
+                    prixBase = PRIX_BASE_2;
+                }
+                else
+                {
+                    prixBase = PRIX_BASE_3;
+                }
+
+                return prixBase * (age() / 10.0);
+            }
+
+        }
+
+        class Commemoratif : Timbre
+        {
+            public Commemoratif(string unCode, int uneAnneeEmission, string unPaysOrigine, double uneValeurFaciale)
+                : base(unCode, uneAnneeEmission, unPaysOrigine, uneValeurFaciale)
+            {
+
+            }
+
+            public override string ToString()
+            {
+                return base.ToString() + "\nTimbre célébrant un évènement";
+            }
+
+            public override double vente()
+            {
+                return base.vente() * 2;
+            }
+        }
+
+ }
+}
