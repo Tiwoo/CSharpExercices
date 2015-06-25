@@ -1,0 +1,48 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using System.Net;
+using System.Text.RegularExpressions;
+using System.IO;
+using System.Web.Mvc;
+using System.Web;
+using HtmlAgilityPack;
+using System.Xml;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+
+namespace BingScraper
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            string json = "";
+            StreamWriter writer = new StreamWriter(@"C:\Users\a-arbagb\Documents\tiwoo\CAP\Bing_France_Product\Qwant\BingResults.txt",false, Encoding.ASCII);
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.DtdProcessing = DtdProcessing.Parse;
+            XmlReader reader = XmlReader.Create("http://www.bing.com/search?mkt=fr-fr&q=salle de bain d angle&format=pbxml", settings);
+            reader.MoveToContent();
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.CDATA && reader.Value.Contains("WebAnswer.WebResponse"))
+                    json = reader.Value; 
+            }
+
+            JObject jObject = JObject.Parse(json);
+            foreach (var result in jObject["results"])
+            {
+                writer.WriteLine("Title: {0}", result["Title"].ToString().Replace("", ""));
+                writer.WriteLine("url: {0}", result["Url"].ToString().Replace("", ""));
+                writer.WriteLine("Snippet: {0},", result["Snippet"].ToString().Replace("", ""));
+                writer.WriteLine();
+            }
+           
+        }
+            
+    }
+}
