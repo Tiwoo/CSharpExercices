@@ -1,0 +1,95 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using System.Net;
+using System.IO;
+using HtmlAgilityPack;
+using System.Text.RegularExpressions;
+
+
+namespace GoogleScaper
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            string[] essai = { "rclens", "top blanc femme" };
+
+            FillGoogle(essai, "fr");
+        }
+
+        public static void FillGoogle(string[] queryList, string market)
+        {
+            foreach (string query in queryList)
+            {
+                string urlFormat = "https://www.google.{0}/search?q={1}";
+                string url = string.Format(urlFormat, market, query);
+                WebClient myWebClient = new WebClient();
+                string html = myWebClient.DownloadString(url);
+                File.WriteAllText(@"C:\Users\a-arbagb\Documents\tiwoo\CAP\Bing_France_Product\Qwant\GoogleResults.txt", html);
+
+                HtmlDocument docu = new HtmlDocument();
+                docu.LoadHtml(html);
+                HtmlNodeCollection resultats = docu.DocumentNode.SelectNodes("//ol/li[@class=\"g\"]");
+                bool isError = false;
+
+                try
+                {
+                    foreach (HtmlNode resultat in resultats)
+                    {
+                        string resultURL2 = "";
+                        string title = "";
+                        HtmlNode link = resultat.SelectSingleNode("h3[@class=\"r\"]/a[@href]");
+                        if (link != null)
+                        {
+                            string resultURL = link.Attributes["href"].Value;
+
+                            if (resultURL.StartsWith("/url?q="))
+                            {
+                                resultURL = ExtractUrlFromRedirect(resultURL);
+                            }
+
+                            if (!resultURL.Contains("https://maps.google") && resultURL.StartsWith("http"))
+                            {
+                                resultURL2 = resultURL;
+                                title = WebUtility.HtmlDecode(link.InnerText);
+
+                            }
+
+                            if (!string.IsNullOrEmpty(resultURL2))
+                            {
+                                //resultURL2 = resultURL2.Replace("/url?q=", "");
+                                Console.WriteLine("Title: {0}\nurl: {1}\n\n", title, resultURL2);
+                            }
+                        }
+                       
+
+                    }
+                }
+                catch (Exception ex)
+                {
+                    isError = true;
+                    Console.WriteLine(ex.Message);
+                }
+
+                if (isError)
+                    continue;
+            }
+            Console.WriteLine("yo");
+        }
+
+        private static string ExtractUrlFromRedirect(string url)
+        {
+            Match result = Regex.Match(url, "/url\\?q=(?<extraction>[^&]+)&.*", RegexOptions.IgnoreCase);
+            if (result.Success)
+            {
+                return WebUtility.UrlDecode(WebUtility.UrlDecode(result.Groups["extraction"].Value));
+            }
+            return url;
+        }
+
+    }
+}
