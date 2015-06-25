@@ -1,0 +1,45 @@
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml;
+
+namespace QwantScraper2._0
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var request = WebRequest.Create("https://api.qwant.com/api/search/web?count=10&f=&locale=fr_fr&q=test");
+            var webResponseStream = request.GetResponse().GetResponseStream();
+            if (webResponseStream != null)
+            {
+                using (var streamReader = new StreamReader(webResponseStream))
+                {
+                    string json = streamReader.ReadToEnd();
+                    JObject jobject = JObject.Parse(json);
+                    foreach (var result in jobject["data"]["result"]["items"])
+                    {
+                        Console.WriteLine("{0}", result["title"]);
+                        string title = (string)result["title"];
+                        title = title.Replace("<b>", "");
+                        Console.WriteLine(title);
+                        Console.WriteLine("score: {0}", result["score"]);
+                        Console.WriteLine("url: {0}", result["url"]);
+                        Console.WriteLine("source: {0}", result["source"]);
+                        Console.WriteLine("desc: {0}", result["desc"]);
+                        Console.WriteLine("date: {0}", result["date"]);
+                        Console.WriteLine("_id: {0}", result["_id"]);
+                        Console.WriteLine();
+                    }
+
+                }
+            }
+            
+        }
+    }
+}
